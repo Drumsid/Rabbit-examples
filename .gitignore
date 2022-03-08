@@ -1,0 +1,6 @@
+/docker/postgres
+/docker/elastic
+/docker/pgadmin
+/.idea
+
+/vendor

@@ -1,0 +1,80 @@
+version: '3.0'
+
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+    volumes:
+      - .:/rabbit
+    container_name: rabbit-nginx
+    depends_on:
+      - php-fpm
+    restart: always
+    ports:
+      - "8082:80"
+
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+    volumes:
+      - .:/rabbit
+    restart: always
+    container_name: rabbit-php-fpm
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: rabbit-postgres
+    image: postgres:12
+    volumes:
+      - ./docker/postgres:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_DB: rabbit_db
+      POSTGRES_USER: rabbit_user
+      POSTGRES_PASSWORD: secret
+    ports:
+        - "65432:5432"
+
+  redis:
+    container_name: rabbit-redis
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    container_name: rabbit-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: rabbit-elastic
+    environment:
+      - node.name=elastic
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/elastic:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  pgadmin:
+    container_name: rabbit-pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+      - ./docker/pgadmin:/var/lib/pgadmin

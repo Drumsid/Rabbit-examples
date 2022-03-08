@@ -22,3 +22,7 @@ receive_s_1:
 
 sending_s_1:
 	 docker exec -it rabbit-php-fpm  php RabbitMQ/simple_1/sending.php
+
+
+my_sending_simple:
+	 docker exec -it rabbit-php-fpm  php RabbitMQ/mySimple_1/sending.php

@@ -29,3 +29,10 @@ function is_primeOrDivider ($number)
     }
     return 'true';
 }
+
+function countData(array $data)
+{
+    $multiple = $data['firstNum'] * $data['secondNum'];
+    $arrSum = str_split($multiple);
+    return array_sum($arrSum);
+}

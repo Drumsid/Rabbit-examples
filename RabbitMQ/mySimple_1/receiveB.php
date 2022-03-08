@@ -16,6 +16,7 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once  __DIR__ . '/../../functions/functions.php';
+require_once __DIR__ . '/../../Db/connectDb.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -27,12 +28,13 @@ $channel->queue_declare('queueB', false, false, false, false);
 
 echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
-$callback = function ($msg) use ($channel) {
+$callback = function ($msg) use ($pdo) {
 
     $data = stringToArray($msg->body);
 
     if ((int) $data['firstNum'] % 2 == 0) {
         $value = countData($data);
+        insertToDb($pdo, $value, 'queueB');
         echo " [Insert] Get data {$msg->body}, Insert to DB {$value}\n\n";
     } else {
         echo " [Exception] First number is odd {$msg->body}\n\n";

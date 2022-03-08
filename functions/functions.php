@@ -36,3 +36,9 @@ function countData(array $data)
     $arrSum = str_split($multiple);
     return array_sum($arrSum);
 }
+
+function insertToDb($pdo, $value, $queue_name)
+{
+    $sql = "INSERT INTO queue (value, queue_name) VALUES (?,?)";
+    $pdo->prepare($sql)->execute([$value, $queue_name]);
+}

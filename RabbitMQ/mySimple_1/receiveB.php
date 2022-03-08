@@ -37,7 +37,8 @@ $callback = function ($msg) use ($pdo) {
         insertToDb($pdo, $value, 'queueB');
         echo " [Insert] Get data {$msg->body}, Insert to DB {$value}\n\n";
     } else {
-        echo " [Exception] First number is odd {$msg->body}\n\n";
+        throw new Exception(" [Exception] First number is odd {$msg->body}\n\n");
+//        echo " [Exception] First number is odd {$msg->body}\n\n";
     }
 };
 

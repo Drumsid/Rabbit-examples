@@ -16,6 +16,4 @@ require_once __DIR__ . '/connectDb.php';
 
 if ($pdo) {
     echo "Connected to the $db database successfully!";
-} else {
-    echo "ERROR!";
 }

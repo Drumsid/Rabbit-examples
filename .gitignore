@@ -1,6 +1,7 @@
 /docker/postgres
 /docker/elastic
 /docker/pgadmin
+/docker/rabbitmq
 /.idea
 
 /vendor

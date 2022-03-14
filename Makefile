@@ -17,6 +17,12 @@ install:
 bash:
 	docker exec -it rabbit-php-fpm bash
 
+#заходим в rabbit
+#команда внтури раббита на проверку сообщений отправленых, подтвержденных
+#rabbitmqctl list_queues name messages_ready messages_unacknowledged
+bash:
+	docker exec -it rabbit-rabbitmq bash
+
 #===================  docker simple =====================================
 receive_s_1:
 	docker exec -it rabbit-php-fpm  php RabbitMQ/simple_1/receive.php

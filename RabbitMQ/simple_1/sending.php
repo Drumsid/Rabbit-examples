@@ -20,13 +20,16 @@ $channel = $connection->channel();
 
 $channel->queue_declare('hello', false, false, false, false);
 
-$key = rand();
-$textMessage = "Hello World_{$key}";
+//for ($i = 1; $i <= 1000000; $i++) {
+    $key = rand();
+    $textMessage = "Hello World_{$key}";
 
-$msg = new AMQPMessage($textMessage);
-$channel->basic_publish($msg, '', 'hello');
+    $msg = new AMQPMessage($textMessage);
+    $channel->basic_publish($msg, '', 'hello');
 
-echo " [x] Sent '{$textMessage}'\n";
+    echo " [x] Sent '{$textMessage}'\n";
+//}
+
 
 $channel->close();
 $connection->close();

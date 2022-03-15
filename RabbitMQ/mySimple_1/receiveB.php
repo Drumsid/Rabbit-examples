@@ -2,7 +2,7 @@
 
 /*
 *    Этот файл принимает сообщения с 2 числами из файла RabbitMQ/mySimple_1/sending.php
-*    слушает очередь queueB
+*    слушает очередь Queue_B
 *    проверяет первое число на четность(бросает исключение в противном случае), перемножает присланные числа,
 *    складывает цифры полученного числа в сумму и пишет ее в БД
 *
@@ -10,7 +10,7 @@
 *    Запускаем в консоли докера чтоб отправить сообщение команду
 *    `make my_sending_simple` и происходит отправка в одну из очередей
 *
-*    Чтоб получить сообщения из queueB запускаем
+*    Чтоб получить сообщения из Queue_B запускаем
 *    `make receive_B`
 */
 
@@ -24,9 +24,10 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 $connection = new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('queueB', false, false, false, false);
+//отмечаем в $channel->queue_declare 3 аргумент (durable) true чтоб не потерять сообщения если серевер крашнется
+$channel->queue_declare('Queue_B', false, true, false, false);
 
-echo " [*] Waiting for messages. To exit press CTRL+C\n";
+echo " [*] Queue_B waiting for messages. To exit press CTRL+C\n";
 
 $callback = function ($msg) use ($pdo) {
 
@@ -34,15 +35,19 @@ $callback = function ($msg) use ($pdo) {
 
     if ((int) $data['firstNum'] % 2 == 0) {
         $value = countData($data);
-        insertToDb($pdo, $value, 'queueB');
+        insertToDb($pdo, $value, 'Queue_B');
         echo " [Insert] Get data {$msg->body}, Insert to DB {$value}\n\n";
+        $msg->ack();
     } else {
         throw new Exception(" [Exception] First number is odd {$msg->body}\n\n");
 //        echo " [Exception] First number is odd {$msg->body}\n\n";
     }
 };
 
-$channel->basic_consume('queueB', '', false, true, false, false, $callback);
+//$channel->basic_qos = не отправлять новое сообщение рабочему процессу, пока он не обработает и не подтвердит предыдущее.
+$channel->basic_qos(null, 1, null);
+//no_ack ставим flase чтоб работало подтверждение
+$channel->basic_consume('Queue_B', '', false, false, false, false, $callback);
 
 while ($channel->is_open()) {
     $channel->wait();

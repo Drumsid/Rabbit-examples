@@ -1,5 +1,6 @@
 <?php
 
+//отправка direct отправляет только по ключам
 
 //отправляем сообщение с ключом. Ключ, первое слово в сообщении пример отправки с ключом error
 //docker exec -it rabbit-php-fpm  php RabbitMQ/simple_4_routing/emit_log_direct.php error send msg

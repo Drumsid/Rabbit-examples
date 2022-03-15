@@ -1,5 +1,7 @@
 <?php
 
+//отправка fanout отправляет во все очереди
+
 //отправляет сообщениия во все очереди какие его слушают, их может быть много или может не быть сосвсем
 //пример отправки
 //docker exec -it rabbit-php-fpm  php RabbitMQ/simple_3_publish_subscribe/emit_log.php test send log

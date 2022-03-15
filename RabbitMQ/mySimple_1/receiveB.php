@@ -19,17 +19,18 @@ require_once  __DIR__ . '/../../functions/functions.php';
 require_once __DIR__ . '/../../Db/connectDb.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-
+use PhpAmqpLib\Message\AMQPMessage;
 
 $connection = new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
 //отмечаем в $channel->queue_declare 3 аргумент (durable) true чтоб не потерять сообщения если серевер крашнется
 $channel->queue_declare('Queue_B', false, true, false, false);
+//$channel->queue_declare('Queue_C', false, true, false, false);
 
 echo " [*] Queue_B waiting for messages. To exit press CTRL+C\n";
 
-$callback = function ($msg) use ($pdo) {
+$callback = function ($msg) use ($pdo, $channel) {
 
     $data = stringToArray($msg->body);
 
@@ -37,6 +38,9 @@ $callback = function ($msg) use ($pdo) {
         $value = countData($data);
         insertToDb($pdo, $value, 'Queue_B');
         echo " [Insert] Get data {$msg->body}, Insert to DB {$value}\n\n";
+
+//        $newMsg = new AMQPMessage($value, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+//        $channel->basic_publish($newMsg, '', 'Queue_C');
         $msg->ack();
     } else {
         throw new Exception(" [Exception] First number is odd {$msg->body}\n\n");

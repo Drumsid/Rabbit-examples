@@ -3,5 +3,6 @@
 /docker/pgadmin
 /docker/rabbitmq
 /.idea
-
+*.log
+/logs
 /vendor
